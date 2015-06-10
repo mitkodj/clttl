@@ -4,6 +4,7 @@ var app = require('express')();
 var server = app.listen(3000);
 var io = require('socket.io').listen(server);
 var router = express.Router();
+var request = require('request');
 
 // server.listen(8088);
 // server.listen(app.get('port'), function(){
@@ -22,6 +23,24 @@ app.get('/test', function(req, res) {
   var info = "some test request";
   console.log("----------------------------------------------------------------");
   io.sockets.emit("news", {info: info});
+  res.send('');
+});
+
+app.post('/test', function(req, res) {
+  var info = "some test request";
+  console.log("----------------------------------------------------------------");
+  io.sockets.emit("news", {info: info});
+  res.send('');
+});
+
+app.get('/req', function(req, res) {
+  var info = "some test request";
+  console.log("----------------------------------------------------------------");
+  request.post(
+  	{url:'http://127.0.0.1:3000/test', 
+  	form: {key:info}}, 
+	function(err,httpResponse,body){ /* ... */ }
+  );
   res.send('');
 });
 
