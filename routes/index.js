@@ -1,7 +1,7 @@
 var express = require('express');
 var app = require('express')();
 // var server = require('http').createServer(app);
-var server = app.listen(3000);
+var server = app.listen(3011);
 var io = require('socket.io').listen(server);
 var router = express.Router();
 var request = require('request');
@@ -37,9 +37,11 @@ app.get('/req', function(req, res) {
   var info = "some test request";
   console.log("----------------------------------------------------------------");
   request.post(
-  	{url:'http://127.0.0.1:3000/test', 
+  	{url:'http://127.0.0.1:3000/testTool/req', 
   	form: {key:info}}, 
-	function(err,httpResponse,body){ /* ... */ }
+	function(err,httpResponse,body){ /* ... */ 
+    console.log(err, body);
+  }
   );
   res.send('');
 });
