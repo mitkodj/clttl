@@ -1,4 +1,11 @@
-extends layout
+script(type='text/javascript' src='http://code.jquery.com/jquery.min.js')
+script(src='/socket.io/socket.io.js')
+script.
+    var socket = io();
+    socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+    });
 
 block content
   h1= title
