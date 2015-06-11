@@ -38,20 +38,92 @@ app.get('/req', function(req, res) {
   var info = "some test request";
   console.log("----------------------------------------------------------------");
 
-  var randNumb = Random.integer(0, 2)(Random.engines.nativeMath);
-  var rands = [
-  	-111,
-    "1 OR 1=1",
-    "1 UNION SELECT @@hostname, 1, 1"
+  var randNumb = Random.integer(0, 14)(Random.engines.nativeMath);
+  var minVal = Random.integer(0, 10)(Random.engines.nativeMath);
+  var maxVal = Random.integer(0, 10)(Random.engines.nativeMath);
+
+  var requestQueries = [
+      123456789,
+      111111111,
+      414141414,
+      -111,
+      123456789,
+      111111111,
+      414141414,
+      -111,
+      "1 OR 1=1",
+      "1 AND " + minVal + "=" + maxVal,
+      "1 UNION SELECT @@version, 1, 1",
+      "1 UNION SELECT version(), 1, 1",
+      "1 UNION SELECT @@datadir, 1, 1",
+      "1 UNION SELECT database(), 1, 1",
+      "1 UNION SELECT @@hostname, 1, 1", 
   ];
 
-  var query = rands[randNumb];
+  var ratings = {
+      'mitko': {
+          '127.0.0.1': 0,
+          '192.167.11.203': 0,
+          '68.191.13.44': 0
+      },
+      'mira': {
+          '127.0.0.1': 0,
+          '192.167.11.203': 0,
+          '68.191.13.44': 0
+      },
+      'ivan': {
+          '127.0.0.1': 0,
+          '192.167.11.203': 0,
+          '68.191.13.44': 0
+      },
+      'test_user': {
+          '127.0.0.1': 0,
+          '192.167.11.203': 0,
+          '68.191.13.44': 0
+      }
+  };
 
+  var users = [{
+      Id: 1,
+      username: 'mitko',
+      password: 'dimitar'
+  }, {
+      Id: 2,
+      username: 'mira',
+      password: '12345'
+  }, {
+      Id: 3,
+      username: 'ivan',
+      password: '0000'
+  }, {
+      Id: 4,
+      username: 'test_user',
+      password: 'test'
+  }];
+
+  var IPs = [
+      '127.0.0.1',
+      '192.167.11.203',
+      '68.191.13.44'
+  ];
+
+  var query = requestQueries[randNumb];
+
+  randNumb = Random.integer(0, 3)(Random.engines.nativeMath);
+
+  var user = users[randNumb];
+
+  randNumb = Random.integer(0, 2)(Random.engines.nativeMath);
+
+  var IP = IPs[randNumb];
+  
   request.post(
-  	{url:'http://127.0.0.1:3000/testTool/req', 
+  	{
+      url:'http://127.0.0.1:3000/testTool/req', 
   	form: {
-  		username: 'mitko',
-  		IP: '127.0.0.1',
+  		username: user.username,
+      password: user.password,
+  		IP: IP,
   		iban: query,
   		rating: 0
   		}
