@@ -5,6 +5,7 @@ var server = app.listen(3011);
 var io = require('socket.io').listen(server);
 var router = express.Router();
 var request = require('request');
+var Random = require('random-js');
 
 // server.listen(8088);
 // server.listen(app.get('port'), function(){
@@ -36,9 +37,25 @@ app.post('/test', function(req, res) {
 app.get('/req', function(req, res) {
   var info = "some test request";
   console.log("----------------------------------------------------------------");
+
+  var randNumb = Random.integer(0, 2)(Random.engines.nativeMath);
+  var rands = [
+  	-111,
+    "1 OR 1=1",
+    "1 UNION SELECT @@hostname, 1, 1"
+  ];
+
+  var query = rands[randNumb];
+
   request.post(
   	{url:'http://127.0.0.1:3000/testTool/req', 
-  	form: {key:info}}, 
+  	form: {
+  		username: 'mitko',
+  		IP: '127.0.0.1',
+  		iban: query,
+  		rating: 0
+  		}
+  	}, 
 	function(err,httpResponse,body){ /* ... */ 
     console.log(err, body);
   }
