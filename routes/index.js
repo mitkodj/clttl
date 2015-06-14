@@ -11,6 +11,10 @@ var il = new InfiniteLoop;
 il.add(cycleReqSend);
 il.setInterval(2000);
 var InfiniteLoopRunning = false;
+var anomalyQueries = [];
+var patterns = require('../libs/patterns');
+var Q = require('Q');
+var _ = require('lodash');
 
 // server.listen(8088);
 // server.listen(app.get('port'), function(){
@@ -47,7 +51,37 @@ app.get('/req', function(req, res) {
     il.stop();
     InfiniteLoopRunning = false;
   } else {
-    il.run();
+
+    patterns.getPatterns()
+    .then(function(anomalies){
+
+      console.log(anomalies);
+      var patternResults = _.map(anomalies.patterns, function(element) {
+        console.log('>>>>>');
+        return element.pattern;
+      });
+
+      var fillResults = _.map(anomalies.fills, function(element) {
+        console.log('<<<<<');
+        return element.fill_text;
+      });
+      console.log(patternResults, fillResults);
+      anomalyQueries = _.flatten(_.map(patternResults, function (element) {
+
+        if (element.indexOf('{0}') >= 0 && element.indexOf('{1}') < 0) {
+          console.log(_.map(fillResults, function(fill) {
+            return element.replace( '{0}',fill);
+          }));
+          return _.map(fillResults, function(fill) {
+            return element.replace( '{0}',fill);
+          });
+        } else {
+          console.log(element);
+          return element;
+        }
+      }));
+      il.run();
+    });
     InfiniteLoopRunning = true;
   }
   
@@ -56,6 +90,8 @@ app.get('/req', function(req, res) {
 
 function cycleReqSend(){
   InfiniteLoopRunning = true;
+  console.log(anomalyQueries);
+
   var randNumb = Random.integer(0, 14)(Random.engines.nativeMath);
   var minVal = Random.integer(0, 10)(Random.engines.nativeMath);
   var maxVal = Random.integer(0, 10)(Random.engines.nativeMath);
