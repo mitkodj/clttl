@@ -1,12 +1,33 @@
 script(type='text/javascript' src='http://code.jquery.com/jquery.min.js')
 script(src='/socket.io/socket.io.js')
 script.
-    var socket = io();
-    socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-    });
-
+	var dataCollection = [];
+	$(document).ready(function() {
+		$("input[name=runButton]").click( function() {
+			$.ajax({
+			  url: "/req",
+			  success: function(response) {
+				console.log(response, response == "true");
+				if (response == true) {
+					$("input[name=runButton]").prop('value', 'Stop');
+					//- console.log($("input[name=runButton]").value);
+				} else {
+					$("input[name=runButton]").prop('value', 'Start');
+				}
+			  },
+			  dataType: "json",
+			  error: function(err) {
+				console.log(response, response == "true");
+				if (response) {
+					$("input[name=runButton]").value = "Stop";
+				} else {
+					$("input[name=runButton]").value = "Start";
+				}
+			  },
+			});
+		} );
+		})
 block content
-  h1= title
-  p Welcome to #{title}
+	h1 Тестов Инструмент
+	p Това е тестовият инструмент за симулиране на заявки към нашия сървър. За да започнете процеса на изпращане на заявки, натиснете Start, а за да го спрете - Stop.
+	input(type="button",name="runButton",value="Start")

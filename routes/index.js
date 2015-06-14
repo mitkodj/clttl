@@ -6,6 +6,11 @@ var io = require('socket.io').listen(server);
 var router = express.Router();
 var request = require('request');
 var Random = require('random-js');
+var InfiniteLoop = require('infinite-loop');
+var il = new InfiniteLoop;
+il.add(cycleReqSend);
+il.setInterval(2000);
+var InfiniteLoopRunning = false;
 
 // server.listen(8088);
 // server.listen(app.get('port'), function(){
@@ -38,6 +43,19 @@ app.get('/req', function(req, res) {
   var info = "some test request";
   console.log("----------------------------------------------------------------");
 
+  if (InfiniteLoopRunning == true) {
+    il.stop();
+    InfiniteLoopRunning = false;
+  } else {
+    il.run();
+    InfiniteLoopRunning = true;
+  }
+  
+  res.send(InfiniteLoopRunning);
+});
+
+function cycleReqSend(){
+  InfiniteLoopRunning = true;
   var randNumb = Random.integer(0, 14)(Random.engines.nativeMath);
   var minVal = Random.integer(0, 10)(Random.engines.nativeMath);
   var maxVal = Random.integer(0, 10)(Random.engines.nativeMath);
@@ -118,22 +136,21 @@ app.get('/req', function(req, res) {
   var IP = IPs[randNumb];
   
   request.post(
-  	{
+    {
       url:'http://127.0.0.1:3000/testTool/req', 
-  	form: {
-  		username: user.username,
+    form: {
+      username: user.username,
       password: user.password,
-  		IP: IP,
-  		iban: query,
-  		rating: 0
-  		}
-  	}, 
-	function(err,httpResponse,body){ /* ... */ 
+      IP: IP,
+      iban: query,
+      rating: 0
+      }
+    }, 
+  function(err,httpResponse,body){ /* ... */ 
     console.log(err, body);
   }
   );
-  res.send('');
-});
+}
 
 
 io.on('connection', function (socket) {
