@@ -57,29 +57,54 @@ app.get('/req', function(req, res) {
 
       console.log(anomalies);
       var patternResults = _.map(anomalies.patterns, function(element) {
-        console.log('>>>>>');
         return element.pattern;
       });
 
       var fillResults = _.map(anomalies.fills, function(element) {
-        console.log('<<<<<');
         return element.fill_text;
       });
-      console.log(patternResults, fillResults);
       anomalyQueries = _.flatten(_.map(patternResults, function (element) {
 
         if (element.indexOf('{0}') >= 0 && element.indexOf('{1}') < 0) {
-          console.log(_.map(fillResults, function(fill) {
-            return element.replace( '{0}',fill);
-          }));
           return _.map(fillResults, function(fill) {
             return element.replace( '{0}',fill);
           });
         } else {
-          console.log(element);
-          return element;
+          if (element.indexOf('{0}') >= 0 && element.indexOf('{1}') >= 0) {
+            var minVal = Random.integer(0, 10)(Random.engines.nativeMath);
+            var maxVal = Random.integer(0, 10)(Random.engines.nativeMath);
+            return element.replace( '{0}',minVal).replace( '{1}',maxVal);
+          } else {
+            return element; 
+          }
         }
       }));
+
+
+      var requestQueries = [
+          123456789,
+          111111111,
+          414141414,
+          -111
+          // 123456789,
+          // 111111111,
+          // 414141414,
+          // -111,
+          // "1 OR 1=1",
+          // "1 AND " + minVal + "=" + maxVal,
+          // "1 UNION SELECT @@version, 1, 1",
+          // "1 UNION SELECT version(), 1, 1",
+          // "1 UNION SELECT @@datadir, 1, 1",
+          // "1 UNION SELECT database(), 1, 1",
+          // "1 UNION SELECT @@hostname, 1, 1", 
+      ];
+
+      var queryLength = anomalyQueries.length;
+
+      for (var j = 0; j < queryLength; j++) {
+        anomalyQueries.push(requestQueries[j%4]);
+      }
+
       il.run();
     });
     InfiniteLoopRunning = true;
@@ -92,27 +117,27 @@ function cycleReqSend(){
   InfiniteLoopRunning = true;
   console.log(anomalyQueries);
 
-  var randNumb = Random.integer(0, 14)(Random.engines.nativeMath);
+  // var requestQueries = [
+  //     123456789,
+  //     111111111,
+  //     414141414,
+  //     -111
+  //     // 123456789,
+  //     // 111111111,
+  //     // 414141414,
+  //     // -111,
+  //     // "1 OR 1=1",
+  //     // "1 AND " + minVal + "=" + maxVal,
+  //     // "1 UNION SELECT @@version, 1, 1",
+  //     // "1 UNION SELECT version(), 1, 1",
+  //     // "1 UNION SELECT @@datadir, 1, 1",
+  //     // "1 UNION SELECT database(), 1, 1",
+  //     // "1 UNION SELECT @@hostname, 1, 1", 
+  // ];
+
+  var randNumb = Random.integer(0, anomalyQueries.length - 1)(Random.engines.nativeMath);
   var minVal = Random.integer(0, 10)(Random.engines.nativeMath);
   var maxVal = Random.integer(0, 10)(Random.engines.nativeMath);
-
-  var requestQueries = [
-      123456789,
-      111111111,
-      414141414,
-      -111,
-      123456789,
-      111111111,
-      414141414,
-      -111,
-      "1 OR 1=1",
-      "1 AND " + minVal + "=" + maxVal,
-      "1 UNION SELECT @@version, 1, 1",
-      "1 UNION SELECT version(), 1, 1",
-      "1 UNION SELECT @@datadir, 1, 1",
-      "1 UNION SELECT database(), 1, 1",
-      "1 UNION SELECT @@hostname, 1, 1", 
-  ];
 
   var ratings = {
       'mitko': {
@@ -161,11 +186,12 @@ function cycleReqSend(){
       '68.191.13.44'
   ];
 
-  var query = requestQueries[randNumb];
+  var query = anomalyQueries[randNumb];
 
   randNumb = Random.integer(0, 3)(Random.engines.nativeMath);
 
-  var user = users[randNumb];
+  // var user = users[randNumb];
+  var user = users[1];
 
   randNumb = Random.integer(0, 2)(Random.engines.nativeMath);
 
