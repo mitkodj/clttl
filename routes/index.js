@@ -199,7 +199,7 @@ function cycleReqSend(){
   
   request.post(
     {
-      url:'http://127.0.0.1:3000/testTool/req', 
+      url:'http://127.0.0.1:3000/tool/req', 
     form: {
       username: user.username,
       password: user.password,
