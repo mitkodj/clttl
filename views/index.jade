@@ -29,12 +29,13 @@ script.
 		} );
 		$("input[name=addButton]").click( function() {
 			var ip = document.getElementById('fill').value;
+			var strVal = JSON.stringify({address: ip});
 			$.ajax({
 				type: "POST",
 				url: '/addIP',
-				data: {
-					ip: ip
-				},
+			    contentType: "application/json",
+				data: strVal,
+				dataType: "json",
 				success: function(response) {
 					var resultTable = document.getElementById('ipsResultsTable');
 					
@@ -49,7 +50,6 @@ script.
 						$('#ipsResultsTable').append(tableRow);
 					}
 				},
-				dataType: "json",
 				error: function(err) {
 					console.log("ERRor");
 					var resultTable = document.getElementById('ipsResultsTable');

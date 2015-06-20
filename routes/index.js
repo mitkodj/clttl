@@ -11,10 +11,12 @@ var il = new InfiniteLoop;
 il.add(cycleReqSend);
 il.setInterval(2000);
 var InfiniteLoopRunning = false;
-var anomalyQueries = [];
 var patterns = require('../libs/patterns');
 var Q = require('Q');
 var _ = require('lodash');
+var qs = require('querystring');
+var anomalyQueries = [];
+var interfaceRes = [];
 
 app.get('/', function(req, res) {
 
@@ -24,8 +26,19 @@ app.get('/', function(req, res) {
       return element.IP;
     });
 
+    interfaceRes = ipResults;
     res.render('index', {IPs: ipResults});
   })
+});
+
+app.post('/addIP', function(req, res) {
+    console.log(">>>", req.body);
+    patterns.addIPs(req.body.address)
+    .then(function(results) {
+
+      interfaceRes.push(req.body.address);
+      res.send(interfaceRes);
+    });
 });
 
 app.get('/test', function(req, res) {
@@ -35,20 +48,10 @@ app.get('/test', function(req, res) {
   res.send('');
 });
 
-app.post('/addIP', function(req, res) {
-
-  patterns.addIP(req.body.ip)
-  .then(function(results) {
-
-    interfaceRes.patterns.push(req.body.pattern);
-      res.send(interfaceRes.patterns);
-  })
-});
-
 app.post('/test', function(req, res) {
   var info = "some test request";
-  console.log("----------------------------------------------------------------");
-  io.sockets.emit("news", {info: info});
+  console.log("----------------------------------------------------------------", req.body);
+  // io.sockets.emit("news", {info: info});
   res.send('');
 });
 
@@ -111,6 +114,10 @@ app.get('/req', function(req, res) {
   res.send(InfiniteLoopRunning);
 });
 
+function addIP(ip) {
+  interfaceRes.push(ip)
+}
+
 function cycleReqSend(){
   InfiniteLoopRunning = true;
   console.log(anomalyQueries);
@@ -118,29 +125,6 @@ function cycleReqSend(){
   var randNumb = Random.integer(0, anomalyQueries.length - 1)(Random.engines.nativeMath);
   var minVal = Random.integer(0, 10)(Random.engines.nativeMath);
   var maxVal = Random.integer(0, 10)(Random.engines.nativeMath);
-
-  var ratings = {
-      'mitko': {
-          '127.0.0.1': 0,
-          '192.167.11.203': 0,
-          '68.191.13.44': 0
-      },
-      'mira': {
-          '127.0.0.1': 0,
-          '192.167.11.203': 0,
-          '68.191.13.44': 0
-      },
-      'ivan': {
-          '127.0.0.1': 0,
-          '192.167.11.203': 0,
-          '68.191.13.44': 0
-      },
-      'test_user': {
-          '127.0.0.1': 0,
-          '192.167.11.203': 0,
-          '68.191.13.44': 0
-      }
-  };
 
   var users = [{
       Id: 1,
@@ -160,22 +144,19 @@ function cycleReqSend(){
       password: 'test'
   }];
 
-  var IPs = [
-      '127.0.0.1',
-      '192.167.11.203',
-      '68.191.13.44'
-  ];
+  var IPs = interfaceRes;
 
   var query = anomalyQueries[randNumb];
 
   randNumb = Random.integer(0, 3)(Random.engines.nativeMath);
 
-  // var user = users[randNumb];
-  var user = users[1];
+  var user = users[randNumb];
+  // var user = users[1];
 
-  randNumb = Random.integer(0, 2)(Random.engines.nativeMath);
+  randNumb = Random.integer(0, IPs.length - 1 )(Random.engines.nativeMath);
 
   var IP = IPs[randNumb];
+  console.log("IIIIIIIIII", IP, IPs);
   
   request.post(
     {
