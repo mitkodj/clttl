@@ -1,4 +1,5 @@
 script(type='text/javascript' src='http://code.jquery.com/jquery.min.js')
+link(rel='stylesheet', href='/stylesheets/style.css')
 script(src='/socket.io/socket.io.js')
 script.
 	var dataCollection = [];
@@ -26,8 +27,50 @@ script.
 			  },
 			});
 		} );
+		$("input[name=addButton]").click( function() {
+			var ip = document.getElementById('fill').value;
+			$.ajax({
+				type: "POST",
+				url: '/addIP',
+				data: {
+					ip: ip
+				},
+				success: function(response) {
+					var resultTable = document.getElementById('ipsResultsTable');
+					
+					resultTable.innerHTML = "<tr><th>IP Адрес</th></tr>";
+
+					for(var i = 0; i< response.length; i++){
+						var tableRow = "",
+							td = "<td>";
+							tableRow += "<tr>" + td;
+							tableRow +=
+							response[i] + "</td></tr>";
+						$('#ipsResultsTable').append(tableRow);
+					}
+				},
+				dataType: "json",
+				error: function(err) {
+					console.log("ERRor");
+					var resultTable = document.getElementById('ipsResultsTable');
+					
+					resultTable.innerHTML = "<tr><th>IP Адрес</th></tr>";
+					alert("SQL Injection");
+				}
+			});
+		} );
 		})
 block content
 	h1 Тестов Инструмент
 	p Това е тестовият инструмент за симулиране на заявки към нашия сървър. За да започнете процеса на изпращане на заявки, натиснете Start, а за да го спрете - Stop.
 	input(type="button",name="runButton",value="Start")
+div.formClass
+	label(for='fill') Име на процедура или променлива
+	input(id="fill", type="text", name="fill")
+	input(type="button", name="addButton", value="Добави")
+	table(id="ipsResultsTable")
+		tr
+			th IP Адрес
+		each val, index in IPs
+			tr
+				td= val

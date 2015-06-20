@@ -16,17 +16,16 @@ var patterns = require('../libs/patterns');
 var Q = require('Q');
 var _ = require('lodash');
 
-// server.listen(8088);
-// server.listen(app.get('port'), function(){
-//   console.log('listening on *:' + app.get('port'));
-// });
-
-/* GET home page. */
-// router.get('/', function(req, res) {
-//   res.render('index', { title: 'Express' });
-// });
 app.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+
+  patterns.getIPs()
+  .then(function(results) {
+    var ipResults = _.map(results, function(element) {
+      return element.IP;
+    });
+
+    res.render('index', {IPs: ipResults});
+  })
 });
 
 app.get('/test', function(req, res) {
@@ -34,6 +33,16 @@ app.get('/test', function(req, res) {
   console.log("----------------------------------------------------------------");
   io.sockets.emit("news", {info: info});
   res.send('');
+});
+
+app.post('/addIP', function(req, res) {
+
+  patterns.addIP(req.body.ip)
+  .then(function(results) {
+
+    interfaceRes.patterns.push(req.body.pattern);
+      res.send(interfaceRes.patterns);
+  })
 });
 
 app.post('/test', function(req, res) {
@@ -86,17 +95,6 @@ app.get('/req', function(req, res) {
           111111111,
           414141414,
           -111
-          // 123456789,
-          // 111111111,
-          // 414141414,
-          // -111,
-          // "1 OR 1=1",
-          // "1 AND " + minVal + "=" + maxVal,
-          // "1 UNION SELECT @@version, 1, 1",
-          // "1 UNION SELECT version(), 1, 1",
-          // "1 UNION SELECT @@datadir, 1, 1",
-          // "1 UNION SELECT database(), 1, 1",
-          // "1 UNION SELECT @@hostname, 1, 1", 
       ];
 
       var queryLength = anomalyQueries.length;
@@ -116,24 +114,6 @@ app.get('/req', function(req, res) {
 function cycleReqSend(){
   InfiniteLoopRunning = true;
   console.log(anomalyQueries);
-
-  // var requestQueries = [
-  //     123456789,
-  //     111111111,
-  //     414141414,
-  //     -111
-  //     // 123456789,
-  //     // 111111111,
-  //     // 414141414,
-  //     // -111,
-  //     // "1 OR 1=1",
-  //     // "1 AND " + minVal + "=" + maxVal,
-  //     // "1 UNION SELECT @@version, 1, 1",
-  //     // "1 UNION SELECT version(), 1, 1",
-  //     // "1 UNION SELECT @@datadir, 1, 1",
-  //     // "1 UNION SELECT database(), 1, 1",
-  //     // "1 UNION SELECT @@hostname, 1, 1", 
-  // ];
 
   var randNumb = Random.integer(0, anomalyQueries.length - 1)(Random.engines.nativeMath);
   var minVal = Random.integer(0, 10)(Random.engines.nativeMath);
@@ -205,7 +185,8 @@ function cycleReqSend(){
       password: user.password,
       IP: IP,
       iban: query,
-      rating: 0
+      rating: 0,
+      test: true
       }
     }, 
   function(err,httpResponse,body){ /* ... */ 
