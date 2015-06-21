@@ -1,3 +1,4 @@
+'use strict';
 var express = require('express');
 var app = require('express')();
 // var server = require('http').createServer(app);
@@ -16,6 +17,7 @@ var Q = require('Q');
 var _ = require('lodash');
 var qs = require('querystring');
 var anomalyQueries = [];
+var collectionIPs = [];
 var interfaceRes = [];
 
 app.get('/', function(req, res) {
@@ -32,27 +34,12 @@ app.get('/', function(req, res) {
 });
 
 app.post('/addIP', function(req, res) {
-    console.log(">>>", req.body);
     patterns.addIPs(req.body.address)
     .then(function(results) {
 
       interfaceRes.push(req.body.address);
       res.send(interfaceRes);
     });
-});
-
-app.get('/test', function(req, res) {
-  var info = "some test request";
-  console.log("----------------------------------------------------------------");
-  io.sockets.emit("news", {info: info});
-  res.send('');
-});
-
-app.post('/test', function(req, res) {
-  var info = "some test request";
-  console.log("----------------------------------------------------------------", req.body);
-  // io.sockets.emit("news", {info: info});
-  res.send('');
 });
 
 app.get('/req', function(req, res) {
@@ -67,6 +54,8 @@ app.get('/req', function(req, res) {
     patterns.getPatterns()
     .then(function(anomalies){
 
+    patterns.getIPs()
+    .then(function(IPs) {
       console.log(anomalies);
       var patternResults = _.map(anomalies.patterns, function(element) {
         return element.pattern;
@@ -92,7 +81,6 @@ app.get('/req', function(req, res) {
         }
       }));
 
-
       var requestQueries = [
           123456789,
           111111111,
@@ -106,7 +94,10 @@ app.get('/req', function(req, res) {
         anomalyQueries.push(requestQueries[j%4]);
       }
 
+      collectionIPs = IPs;
+
       il.run();
+    });
     });
     InfiniteLoopRunning = true;
   }
@@ -144,7 +135,7 @@ function cycleReqSend(){
       password: 'test'
   }];
 
-  var IPs = interfaceRes;
+  var IPs = collectionIPs;
 
   var query = anomalyQueries[randNumb];
 
@@ -155,7 +146,7 @@ function cycleReqSend(){
 
   randNumb = Random.integer(0, IPs.length - 1 )(Random.engines.nativeMath);
 
-  var IP = IPs[randNumb];
+  var IP = IPs[randNumb].IP;
   console.log("IIIIIIIIII", IP, IPs);
   
   request.post(
