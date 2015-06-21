@@ -69,57 +69,55 @@ function addPattern(pattern, fill) {
 	var def = Q.defer();
 
 	var query = "";
-	console.log(pattern, fill);
-		if (pattern) {
+	if (pattern) {
+		query = [
+		"INSERT INTO diplomna_rabota.patterns(pattern)",
+		"VALUES(\'" + pattern + "\');"
+		].join(' ');
+
+		connection.query(query, function(err, rows, fields) {
+			if (err) throw err;
+
 			query = [
-			"INSERT INTO diplomna_rabota.patterns(pattern)",
-			"VALUES(\'" + pattern + "\');"
+			"INSERT INTO diplomna_rabota.pattern_to_fill(patternId, fillId)", 
+			"SELECT (SELECT Id",
+			"FROM diplomna_rabota.patterns WHERE pattern = \'" + pattern + "\') as patternId, Id from", 
+			"diplomna_rabota.fills",
+			"on duplicate key update patternId = patternId;"
 			].join(' ');
 
 			connection.query(query, function(err, rows, fields) {
 				if (err) throw err;
 
-				query = [
-				"INSERT INTO diplomna_rabota.pattern_to_fill(patternId, fillId)", 
-				"SELECT (SELECT Id",
-				"FROM diplomna_rabota.patterns WHERE pattern = \'" + pattern + "\') as patternId, Id from", 
-				"diplomna_rabota.fills",
-				"on duplicate key update patternId = patternId;"
-				].join(' ');
-
-				connection.query(query, function(err, rows, fields) {
-					if (err) throw err;
-
-					def.resolve("true");
-				});
-
+				def.resolve("true");
 			});
-		} else {
+
+		});
+	} else {
+		query = [
+		"INSERT INTO diplomna_rabota.fills(fill_text)",
+		"VALUES(\'" + fill + "\');"
+		].join(' ');
+
+		connection.query(query, function(err, rows, fields) {
+			if (err) throw err;
+
 			query = [
-			"INSERT INTO diplomna_rabota.fills(fill_text)",
-			"VALUES(\'" + fill + "\');"
+			"INSERT INTO diplomna_rabota.pattern_to_fill(patternId, fillId)", 
+			"SELECT Id, (SELECT",
+			"Id FROM diplomna_rabota.fills WHERE fill_text = \'" + fill + "\') as fillId FROM", 
+			"diplomna_rabota.patterns",
+			"on duplicate key update fillId = fillId;"
 			].join(' ');
 
 			connection.query(query, function(err, rows, fields) {
 				if (err) throw err;
 
-				query = [
-				"INSERT INTO diplomna_rabota.pattern_to_fill(patternId, fillId)", 
-				"SELECT Id, (SELECT",
-				"Id FROM diplomna_rabota.fills WHERE fill_text = \'" + fill + "\') as fillId FROM", 
-				"diplomna_rabota.patterns",
-				"on duplicate key update fillId = fillId;"
-				].join(' ');
-
-				connection.query(query, function(err, rows, fields) {
-					if (err) throw err;
-
-					def.resolve("true");
-				});
-
+				def.resolve("true");
 			});
-		}
-	// }
+
+		});
+	}
 	
 
 	return def.promise;

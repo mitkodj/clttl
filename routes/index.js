@@ -1,7 +1,6 @@
 'use strict';
 var express = require('express');
 var app = require('express')();
-// var server = require('http').createServer(app);
 var server = app.listen(3011);
 var io = require('socket.io').listen(server);
 var router = express.Router();
@@ -44,7 +43,6 @@ app.post('/addIP', function(req, res) {
 
 app.get('/req', function(req, res) {
   var info = "some test request";
-  console.log("----------------------------------------------------------------");
 
   if (InfiniteLoopRunning == true) {
     il.stop();
@@ -56,7 +54,6 @@ app.get('/req', function(req, res) {
 
     patterns.getIPs()
     .then(function(IPs) {
-      console.log(anomalies);
       var patternResults = _.map(anomalies.patterns, function(element) {
         return element.pattern;
       });
@@ -111,7 +108,6 @@ function addIP(ip) {
 
 function cycleReqSend(){
   InfiniteLoopRunning = true;
-  console.log(anomalyQueries);
 
   var randNumb = Random.integer(0, anomalyQueries.length - 1)(Random.engines.nativeMath);
   var minVal = Random.integer(0, 10)(Random.engines.nativeMath);
@@ -142,12 +138,10 @@ function cycleReqSend(){
   randNumb = Random.integer(0, 3)(Random.engines.nativeMath);
 
   var user = users[randNumb];
-  // var user = users[1];
 
   randNumb = Random.integer(0, IPs.length - 1 )(Random.engines.nativeMath);
 
   var IP = IPs[randNumb].IP;
-  console.log("IIIIIIIIII", IP, IPs);
   
   request.post(
     {
@@ -169,12 +163,9 @@ function cycleReqSend(){
 
 
 io.on('connection', function (socket) {
-	console.log(socket);
   socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) {
-    console.log(data);
     io.sockets.emit('message', data);
-  // console.log('a user connected');
   });
 });
 

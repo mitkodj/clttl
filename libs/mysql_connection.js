@@ -6,6 +6,5 @@ var connection = mysql.createConnection({
 });
 
 module.exports = function() {
-	// console.log(connection);
 	return connection;
 }

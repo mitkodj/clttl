@@ -9,7 +9,6 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-    console.log(">>>", req.body);
     patterns.addIPs(req.body.address)
     .then(function(results) {
 

@@ -8,17 +8,14 @@ script.
 			$.ajax({
 			  url: "/req",
 			  success: function(response) {
-				console.log(response, response == "true");
 				if (response == true) {
 					$("input[name=runButton]").prop('value', 'Stop');
-					//- console.log($("input[name=runButton]").value);
 				} else {
 					$("input[name=runButton]").prop('value', 'Start');
 				}
 			  },
 			  dataType: "json",
 			  error: function(err) {
-				console.log(response, response == "true");
 				if (response) {
 					$("input[name=runButton]").value = "Stop";
 				} else {
