@@ -59,10 +59,10 @@ script.
 		})
 block content
 	h1 Тестов Инструмент
-	p Това е тестовият инструмент за симулиране на заявки към нашия сървър. За да започнете процеса на изпращане на заявки, натиснете Start, а за да го спрете - Stop.
+	p Това е тестовият инструмент за симулиране на заявки към нашия сървър. За да започнете процеса на изпращане на заявки, натиснете Start, а за да го спрете - Stop. За да добавите IP адрес от който да се симулират заявки, изполозвайте формата отдолу.
 	input(type="button",name="runButton",value="Start")
 div.formClass
-	label(for='fill') Име на процедура или променлива
+	label(for='fill') IP адрес
 	input(id="fill", type="text", name="fill")
 	input(type="button", name="addButton", value="Добави")
 	table(id="ipsResultsTable")
