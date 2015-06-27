@@ -1,12 +1,27 @@
-body {
+/*body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
+}*/
 
 a {
   color: #00B7FF;
 }
 
 .formClass {
+	margin-top: 18px;
+}
+
+input{
+	margin-left: 5px;
+}
+
+table, th, td {
 	margin-top: 5px;
+    border: 1px solid black;
+}
+
+table th {
+	background-color: gray;
+	border-width: 2px;
+	border-color: black;
 }

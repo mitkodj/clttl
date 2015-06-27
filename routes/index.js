@@ -33,6 +33,7 @@ app.get('/', function(req, res) {
 });
 
 app.post('/addIP', function(req, res) {
+    // console.log(req.body);
     patterns.addIPs(req.body.address)
     .then(function(results) {
 
