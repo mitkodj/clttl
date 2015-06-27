@@ -58,7 +58,17 @@ function addIPs(ip) {
 	connection.query(query, function(err, res) {
 		if (err) throw err;
 
-		def.resolve(res);
+		query = [
+		"INSERT INTO diplomna_rabota.client_status(distinctKey, rating, IP)",
+		"SELECT Id, 0, '" + ip + "' FROM diplomna_rabota.user_data"
+		].join(' ');
+
+		connection.query(query, function(err, result) {
+			if (err) throw err;
+
+			def.resolve(res);
+		});
+
 	});
 
 	return def.promise;

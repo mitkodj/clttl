@@ -88,7 +88,7 @@ app.get('/req', function(req, res) {
 
       var queryLength = anomalyQueries.length;
 
-      for (var j = 0; j < queryLength; j++) {
+      for (var j = 0; j < queryLength + 2; j++) {
         anomalyQueries.push(requestQueries[j%4]);
       }
 
@@ -133,6 +133,7 @@ function cycleReqSend(){
   }];
 
   var IPs = collectionIPs;
+  console.log(IPs);
 
   var query = anomalyQueries[randNumb];
 
